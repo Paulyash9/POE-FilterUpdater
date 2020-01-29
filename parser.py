@@ -1,22 +1,20 @@
 import requests
 import json
+import pandas as pd
 
 
 class Data:
-    def __init__(self, active_leagues=None, all_categories=None, items=None):
+    def __init__(self, active_leagues=None, all_categories=None):
         if active_leagues is None:
             active_leagues = {'Standard': 'Standard', 'Hardcore': 'Hardcore'}
         if all_categories is None:
             all_categories = dict()
-        if items is None:
-            items = dict()
         self.active_leagues = active_leagues
         self.all_categories = all_categories
-        self.items = items
 
     def go_url(self, league, category):
         urls = f'https://api.poe.watch/get?league={self.get_current_leagues()[league]}' \
-               f'&category={self.categories()[category]}'
+               f'&category={self.get_categories()[category]}'
         response = requests.get(urls).json()
         return response
 
@@ -31,7 +29,7 @@ class Data:
                     self.active_leagues.update({'Current SC': league['name']})
         return self.active_leagues
 
-    def categories(self):
+    def get_categories(self):
         unnecessary_categories = ('gem', 'base', 'prophecy', 'enchantment', 'beast', 'net', 'vial', 'splinter',
                                   'currency', 'essence', 'piece', 'catalyst', 'influence')
         cat_list = requests.get("https://api.poe.watch/categories").json()
@@ -46,30 +44,19 @@ class Data:
         return self.all_categories
 
     def parse(self, league, category):
+        items = dict()
         if self.currency_check(category):
             return self.make_currency_list(league, category)
-        try:
-            for index in self.go_url(league, category):
-                if index['type'] not in self.items.keys():
-                    self.items[index['type']] = index['mean']
-            return self.items
-        except KeyError:
-            for index in self.go_url(league, category):
-                if index['name'] not in self.items.keys():
-                    self.items[index['name']] = index['mean']
-            return self.items
-
-    def uniques_check(self, category):
-        uniques = ('accessory', 'armour', 'flask', 'jewel', 'weapon')
-        for unique in uniques:
-            if category == unique:
-                return True
-
-    def make_unique_list(self, league, category):
-        unique_list = {'Uniques': {}}
-        for index in self.go_url(league, category):
-            unique_list['Uniques'][index['type']] = index['mean']
-        return unique_list
+        df = pd.DataFrame(self.go_url(league, category), columns=['type', 'mean'])
+        df = df.rename(columns={'mean': 'med'})
+        df = df.groupby('type', as_index=False)['med'].max()
+        items = pd.Series(df.med.values, index=df.type).to_dict()
+        if items == {}:
+            df = pd.DataFrame(self.go_url(league, category), columns=['name', 'mean'])
+            df = df.rename(columns={'mean': 'med'})
+            df = df.groupby('name', as_index=False)['med'].max()
+            items = pd.Series(df.med.values, index=df.name).to_dict()
+        return items
 
     def currency_check(self, category):
         currency_categories = ('fossil', 'resonator', 'incubator', 'oil', 'flask')
@@ -78,20 +65,28 @@ class Data:
                 return True
 
     def make_currency_list(self, league, category):
-        for index in requests.get(f'https://api.poe.watch/get?league={self.get_current_leagues()[league]}'
-                                  f'&category=currency').json():
-            if index['group'] == category:
-                self.items[index['name']] = index['mean']
-        return self.items
+        items = dict()
+        response = requests.get(f'https://api.poe.watch/get?league={self.get_current_leagues()[league]}'
+                                f'&category=currency').json()
+        df = pd.DataFrame(response, columns=['group', 'name', 'mean'])
+        df = df.rename(columns={'mean': 'med'})
+        df = df.loc[df['group'] == category]
+        df = df.groupby('name', as_index=False)['med'].max()
+        items = pd.Series(df.med.values, index=df.name).to_dict()
+        return items
 
     def parse_all(self, league):
-        for category in self.categories().keys():
-            self.all_categories.update({self.all_categories[category]: self.parse(league, category)})
-        return self.all_categories
+        itemlist = dict()
+        for category in self.get_categories():
+            item = self.parse(league, category)
+            itemlist[category] = item
+        return itemlist
 
     def save_parser(self, league, category):
         with open('parser.json', 'w', encoding='utf-8') as file:
             json.dump(self.parse(league, category), file)
 
 
-print(Data().categories())
+if __name__ == '__main__':
+    print(Data().get_categories())
+    print(Data().parse_all('Current SC'))
