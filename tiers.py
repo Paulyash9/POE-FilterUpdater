@@ -2,17 +2,25 @@ import json
 import re
 
 
-def Save_filter(load_filter, save_filter):
-    with open(load_filter, 'r', encoding='utf-8') as loadf:
-        with open(save_filter, 'w', encoding='utf-8') as savef:
-            for index, line in load_filter:
-                pass
+def save_filter(all_lines, file='FilterBlade.filter'):  # INCOMPLETED!!!
+    index = 0
+    # сортировка строк
+    sort_lines = {k: v for k, v in sorted(all_lines.items(), key=lambda item: item[1])}
+    with open(file, 'r', encoding='utf-8') as openf:
+        with open('tmp.txt', 'w', encoding='utf-8') as tmpf:
+            for str_value in sort_lines.values():
+                for indexof in openf.readlines():
+                    if index < str_value:
+                        tmpf.write(indexof)  # запись содержимого файла фильтра
+                        index += 1
+                    # tmpf.write(f'BaseType {}')  # обновленная запись предметов
+                    else:
+                        pass
 
 
 class Tiers:
-    def __init__(self, contents, parse_file='parse.json', tierlist=None,
-                 tier_1_price=12, tier_2_price=5, tier_3_price=2,
-                 exception=('Timeworn Reliquary Key', 'Ancient Reliquary Key')):
+    def __init__(self, contents, tierlist=None, tier_1_price=12, tier_2_price=5, tier_3_price=2,
+                 parse_file='parse.json', exception=('Timeworn Reliquary Key', 'Ancient Reliquary Key')):
         self.contents = contents
         self.parse_file = parse_file
         if tierlist is None:
@@ -39,9 +47,9 @@ class Tiers:
                             if re.match('BaseType', found_line):
                                 break
                         if check + 2 < index:
-                            all_lines.update({(self.contents, tier): index})
+                            all_lines.update({(self.contents, f'tier_{tier}'): index})
                         else:
-                            all_lines.update({(self.contents, tier): check})
+                            all_lines.update({(self.contents, f'tier_{tier}'): check})
         return all_lines
 
     def take_bases(self, tier_1=None, tier_2=None, tier_3=None, tier_4=None):
@@ -56,22 +64,21 @@ class Tiers:
         with open(self.parse_file, 'r', encoding='utf-8') as parsed:
             parsed = json.load(parsed)
             self.manage_tiers(parsed, self.contents, tier_1, tier_2, tier_3, tier_4)
-        return tier_1, tier_2, tier_3
+        return tier_1, tier_2, tier_3, tier_4
 
     def manage_tiers(self, parsed, contents, tier_1, tier_2, tier_3, tier_4):
-        for n in parsed[contents]:
-            item_name = n['item_name']
-            price = float(n['price'])
-            if self.remove_exception(item_name) is not None:
+        for name in parsed[contents]:
+            price = parsed[contents][name]
+            if self.remove_exception(name) is not None:
                 if price > self.tier_1_price:
-                    tier_1.append(item_name)
+                    tier_1.append(name)
                 elif self.tier_2_price < price <= self.tier_1_price:
-                    tier_2.append(item_name)
+                    tier_2.append(name)
                 elif self.tier_3_price < price <= self.tier_2_price:
-                    tier_3.append(item_name)
+                    tier_3.append(name)
                 else:
-                    tier_4.append(item_name)
-        return tier_1, tier_2, tier_3
+                    tier_4.append(name)
+        return tier_1, tier_2, tier_3, tier_4
 
     def remove_exception(self, item_name):
         if item_name in self.exception:
@@ -84,8 +91,8 @@ class Tiers:
 
 
 class Fragments(Tiers):
-    def __init__(self, contents, parse_file='parse.json', tierlist=None):
-        super().__init__(contents, parse_file, tier_1_price=12, tier_2_price=5)
+    def __init__(self, contents, tierlist=None):
+        super().__init__(contents, tier_1_price=12, tier_2_price=5)
         if tierlist is None:
             self.tierlist = ['1', '2', '3', '4']
 
@@ -108,9 +115,9 @@ class Fragments(Tiers):
 
 
 class Oils(Tiers):
-    def __init__(self, contents, parse_file='parse.json', tierlist=None, tier_1_price=12, tier_2_price=5,
+    def __init__(self, contents, tierlist=None, tier_1_price=12, tier_2_price=5,
                  tier_3_price=2):
-        super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price, tier_3_price)
+        super().__init__(contents, tierlist, tier_1_price, tier_2_price, tier_3_price)
         if tierlist is None:
             self.tierlist = ['1', '2', '3', '4']
 
@@ -130,9 +137,9 @@ class Oils(Tiers):
 
 
 class Resonators(Tiers):
-    def __init__(self, contents, parse_file='parse.json', tierlist=None,
+    def __init__(self, contents, tierlist=None,
                  tier_1_price=12, tier_2_price=5):
-        super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price)
+        super().__init__(contents, tierlist, tier_1_price, tier_2_price)
 
     def find_lines(self, file):
         contents = 'resonator'
@@ -150,8 +157,8 @@ class Resonators(Tiers):
 
 
 class Fossils(Tiers):
-    def __init__(self, contents, parse_file='parse.json', tierlist=None):
-        super().__init__(contents, parse_file, tier_1_price=12, tier_2_price=5)
+    def __init__(self, contents, tierlist=None):
+        super().__init__(contents, tier_1_price=12, tier_2_price=5)
         if tierlist is None:
             self.tierlist = ['1', '2', '3', '4']
 
@@ -171,7 +178,7 @@ class Fossils(Tiers):
 
 
 class Divination_cards(Tiers):
-    def __init__(self, contents, parse_file='parse.json', tierlist=None,
+    def __init__(self, contents, tierlist=None,
                  tier_1_price=12, tier_2_price=5, tier_3_price=0.65,
                  exception=('The Demoness', 'The Wolf\'s Shadow', "The Wolf\'s Legacy", 'The Master Artisan',
                             'A Mother\'s Parting Gift', 'Birth of the Three', 'Dark Temptation',
@@ -191,7 +198,7 @@ class Divination_cards(Tiers):
                             'Three Faces in the Dark', 'Three Voices', 'Vinia\'s Token', 'The Seeker',
                             'Buried Treasure', 'The Journey', 'Rain of Chaos', 'Her Mask', 'The Gambler',
                             'The Flora\'s Gift', 'The Scholar')):
-        super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price, tier_3_price, exception)
+        super().__init__(contents, tierlist, tier_1_price, tier_2_price, tier_3_price, exception)
 
     def find_lines(self, file):
         contents = 'divination'
@@ -209,25 +216,9 @@ class Divination_cards(Tiers):
 
 
 class Unique_Maps(Tiers):
-    def __init__(self, contents, parse_file='parse.json', tierlist=None,
-                 tier_1_price=12, tier_2_price=5, tier_3_price=0,
-                 exception=('Amber Amulet', 'Assassin Bow', 'Sapphire Ring', 'Triumphant Lamellar', 'Agate Amulet',
-                            'Topaz Ring', 'Saint\'s Hauberk', 'Penetrating Arrow Quiver', 'Jade Amulet',
-                            'Two-Stone Ring', 'Leather Belt', 'Imperial Skean', 'Iron Ring', 'Magistrate Crown',
-                            'Murder Mitts', 'Onyx Amulet', 'Crusader Gloves', 'Studded Belt', 'Sulphur Flask',
-                            'Turquoise Amulet', 'Sorcerer Boots', 'Judgement Staff', 'Stibnite Flask', 'Cobalt Jewel',
-                            'Crimson Jewel', 'Viridian Jewel', 'Brass Maul', 'Clasped Boots', 'Cleaver', 'Coral Ring',
-                            'Crude Bow', 'Crusader Plate', 'Crystal Wand', 'Death Bow', 'Fire Arrow Quiver', 'Gavel',
-                            'Gilded Sallet', 'Gnarled Branch', 'Goathide Gloves', 'Gold Amulet', 'Golden Buckler',
-                            'Great Crown', 'Great Mallet', 'Iron Circlet', 'Iron Hat', 'Iron Mask', 'Iron Staff',
-                            'Ironscale Boots', 'Jade Hatchet', 'Jagged Maul', 'Latticed Ringmail', 'Leather Hood',
-                            'Long Bow', 'Moonstone Ring', 'Ornate Sword', 'Painted Buckler', 'Plank Kite Shield',
-                            'Plate Vest', 'Reaver Sword', 'Reinforced Greaves', 'Royal Bow', 'Royal Staff',
-                            'Rusted Sword', 'Scholar Boots', 'Serrated Arrow Quiver', 'Sharktooth Arrow Quiver',
-                            'Skinning Knife', 'Sledgehammer', 'Spiraled Wand', 'Strapped Leather',
-                            'Tarnished Spirit Shield', 'Velvet Gloves', 'Velvet Slippers', 'Vine Circlet',
-                            'War Buckler', 'Wild Leather', 'Woodsplitter')):
-        super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price, tier_3_price, exception)
+    def __init__(self, contents, tierlist=None,
+                 tier_1_price=12, tier_2_price=5, tier_3_price=0):
+        super().__init__(contents, tierlist, tier_1_price, tier_2_price, tier_3_price)
 
     def find_lines(self, file):
         contents = 'maps'
@@ -245,8 +236,8 @@ class Unique_Maps(Tiers):
 
 
 class Uniques(Tiers):
-    def __init__(self, contents, parse_file='parse.json', tierlist=None,
-                 tier_1_price=12, tier_2_price=5, tier_3_price=2,
+    def __init__(self, contents=None, tierlist=None, tier_1_price=12, tier_2_price=5, tier_3_price=2,
+                 parse_file='parse.json',
                  exception=('Amber Amulet', 'Assassin Bow', 'Sapphire Ring', 'Triumphant Lamellar', 'Agate Amulet',
                             'Topaz Ring', 'Saint\'s Hauberk', 'Penetrating Arrow Quiver', 'Jade Amulet',
                             'Two-Stone Ring', 'Leather Belt', 'Imperial Skean', 'Iron Ring', 'Magistrate Crown',
@@ -263,9 +254,8 @@ class Uniques(Tiers):
                             'Spiraled Wand', 'Strapped Leather', 'Tarnished Spirit Shield', 'Velvet Gloves',
                             'Velvet Slippers', 'Vine Circlet', 'War Buckler', 'Wild Leather', 'Woodsplitter',
                             'Cobalt Jewel', 'Crimson Jewel', 'Viridian Jewel', 'Simple Robe'),
-                 unique_types=('Unique Jewels', 'Unique Flasks', 'Unique Weapons', 'Unique Armours',
-                               'Unique Accessories')):
-        super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price, tier_3_price, exception)
+                 unique_types=('jewel', 'flask', 'weapon', 'armour', 'accessory')):
+        super().__init__(contents, tierlist, tier_1_price, tier_2_price, tier_3_price, parse_file, exception)
         self.unique_types = unique_types
         if tierlist is None:
             self.tierlist = ['1', '2', '4']
@@ -301,15 +291,15 @@ class Uniques(Tiers):
         return all_lines
 
 
-uniques = Uniques('Uniques')
-fragments = Fragments('Fragments')
-div_cards = Divination_cards('Divination Cards')
-fossils = Fossils('Fossils')  # tiers are (1, 2, 4) in NeverSink's filter
-resonators = Resonators('Resonators')
-scarabs = Tiers('Scarabs')
-oils = Oils('Oils')
-incubators = Tiers('Incubators')
-uni_maps = Unique_Maps('Unique Maps')  # has only 2 tiers
+uniques = Uniques('uniques')
+fragments = Fragments('fragment')
+div_cards = Divination_cards('card')
+fossils = Fossils('fossil')  # tiers are (1, 2, 4) in NeverSink's filter
+resonators = Resonators('resonator')
+scarabs = Tiers('scarab')
+oils = Oils('oil')
+incubators = Tiers('incubator')
+uni_maps = Unique_Maps('unique')  # has only 2 tiers
 
 if __name__ == "__main__":
     file_filter = 'FilterBlade.filter'
@@ -326,3 +316,5 @@ if __name__ == "__main__":
     print(f'Not sorted:{lines}')
     lines = {k: v for k, v in sorted(lines.items(), key=lambda item: item[1])}
     print(f'Sorted by values: {lines}')
+    save_filter(lines)
+    print(uniques.take_bases())
