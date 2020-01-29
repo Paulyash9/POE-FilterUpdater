@@ -15,7 +15,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.ui.SelectAllBtn.clicked.connect(self.SelectAllBtn_clicked)
         self.ui.RemoveAllBtn.clicked.connect(self.RemoveAllBtn_clicked)
-        self.ui.LoadBtn.clicked.connect(self.LoadBtn_clicked)
+        self.ui.OpenFileBtn.clicked.connect(self.OpenFileBtn_clicked)
         self.ui.SaveBtn.clicked.connect(self.SaveBtn_clicked)
         self.ui.SortBtn.clicked.connect(self.SortBtn_clicked)
         self.checkboxes = {self.ui.UniquesCheck: tiers.uniques, self.ui.UniqueMapsCheck: tiers.uni_maps,
@@ -35,7 +35,7 @@ class MyWin(QtWidgets.QMainWindow):
             if checkbox.isChecked() is True:
                 checkbox.toggle()
 
-    def LoadBtn_clicked(self):
+    def OpenFileBtn_clicked(self):
         self.file = QFileDialog.getOpenFileName(self, 'Open File',
                                                 osp.expanduser('~\\Documents\\My Games\\Path of Exile'),
                                                 filter='Lootfilter file(*.filter)')[0]
