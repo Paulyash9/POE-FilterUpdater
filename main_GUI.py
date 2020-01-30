@@ -6,7 +6,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from GUI.GUI_2 import *
 import tiers
-import parser
 
 
 class MyWin(QtWidgets.QMainWindow):
@@ -55,15 +54,21 @@ class MyWin(QtWidgets.QMainWindow):
 
     def SortBtn_clicked(self):
         lines = dict()
-        for checkbox in self.checkboxes.keys():
-            if checkbox.isChecked() is True:  # проверка чекбоксов на поставленные галочки
-                # находим строки в файле фильтра:
-                lines.update(self.checkboxes[checkbox].find_lines(osp.abspath(self.file)))
-        sort = tiers.save_filter(lines, self.file)  # сортировка найденных строк, замена данных и сохранение
-        if sort == {}:
-            print('Nothing selected')
-        else:
-            print(sort)
+        bases = dict()
+        try:
+            for checkbox in self.checkboxes.keys():
+                if checkbox.isChecked() is True:  # проверка чекбоксов на поставленные галочки
+                    # находим строки в файле фильтра:
+                    lines.update(self.checkboxes[checkbox].find_lines(osp.abspath(self.file)))
+                    bases.update(self.checkboxes[checkbox].take_bases())
+            #sort = tiers.save_filter(lines, self.file)  # сортировка найденных строк, замена данных и сохранение
+            #if sort == {}:
+            #    print('Select category')
+            else:
+                print(lines)
+                print(bases)
+        except:
+            print('Error')
 
     def mbox(self, body, title='Error'):
         dialog = QMessageBox(QMessageBox.Information, title, body)

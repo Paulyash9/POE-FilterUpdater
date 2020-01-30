@@ -50,6 +50,8 @@ class Data:
             return self.make_scarab_list(league, category)
         if category == 'unique':
             return self.make_map_list(league, category)
+        if category == 'fragment':
+            return self.make_fragment_list(league, category)
         if self.currency_check(category):
             return self.make_currency_list(league, category)
         df = pd.DataFrame(self.go_url(league, category), columns=['type', 'mean'])
@@ -83,6 +85,17 @@ class Data:
         df = df.loc[df['group'] == category]
         df = df.groupby('type', as_index=False)['med'].max()
         items = pd.Series(df.med.values, index=df.type).to_dict()
+        return items
+
+    def make_fragment_list(self, league, category):
+        items = dict()
+        response = requests.get(f'https://api.poe.watch/get?league={self.get_current_leagues()[league]}'
+                                f'&category=map').json()
+        df = pd.DataFrame(response, columns=['group', 'name', 'mean'])
+        df = df.rename(columns={'mean': 'med'})
+        df = df.loc[df['group'] == category]
+        df = df.groupby('name', as_index=False)['med'].max()
+        items = pd.Series(df.med.values, index=df.name).to_dict()
         return items
 
     def currency_check(self, category):
