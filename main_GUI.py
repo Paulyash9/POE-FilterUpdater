@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from GUI.GUI_2 import *
+from GUI import *
 import tiers as t
 import shutil
 from Parsedata import Getdata
@@ -53,29 +53,34 @@ class MyWin(QtWidgets.QMainWindow):
             pass
 
     def SaveBtn_clicked(self):
-        if self.ui.OverrideCheck.isChecked():
-            shutil.copyfile('tmp.txt', osp.basename(self.open_file))
-        else:
-            self.save_file = QFileDialog.getSaveFileName(self, 'Save File',
-                                                         osp.expanduser('~\\Documents\\My Games\\Path of Exile'),
-                                                         filter='Lootfilter file(*.filter)')[0]
-            shutil.copyfile('tmp.txt', osp.basename(self.save_file))
+        try:
+            if self.ui.OverrideCheck.isChecked():
+                shutil.copyfile('tmp.txt', self.open_file)
+            else:
+                self.save_file = QFileDialog.getSaveFileName(self, 'Save File',
+                                                             osp.expanduser('~\\Documents\\My Games\\Path of Exile'),
+                                                             filter='Lootfilter file(*.filter)')[0]
+                shutil.copyfile('tmp.txt', self.save_file)
+                print('Saved')
+        except:
+            pass
 
     def SortBtn_clicked(self):
         lines = dict()
         bases = dict()
         league = self.ui.League.currentText()
-        #  Getdata().save_parser(league)
+        Getdata().save_parser(league)
         print(f'Данные лиги {league} успешно загружены')
         for checkbox in self.checkboxes.keys():
             if checkbox.isChecked() is True:  # проверка чекбоксов на поставленные галочки
                 # находим строки в файле фильтра:
                 bases.update(self.checkboxes[checkbox].take_bases())
                 lines.update(self.checkboxes[checkbox].find_lines())
-        sort = t.tiers.save_filter(lines, bases)  # сортировка найденных строк, замена данных и сохранение
-        if sort == {}:            print('Select category')
+        sorted = t.tiers.save_filter(lines, bases)  # сортировка найденных строк, замена данных и сохранение
+        if lines == {}:
+            print('Select category')
         else:
-            print(sort)
+            print('Done')
 
     def mbox(self, body, title='Error'):
         dialog = QMessageBox(QMessageBox.Information, title, body)

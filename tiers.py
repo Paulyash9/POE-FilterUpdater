@@ -26,7 +26,7 @@ class Tiers:
         self.file_strings = file_strings
         self.exception = exception
 
-    def open_filter(self, file='HiEnd.filter'):
+    def open_filter(self, file='FilterBlade.filter'):
         with open(file, 'r', encoding='utf-8') as openf:
             self.file_strings = openf.readlines()
             openf.close()
@@ -40,17 +40,17 @@ class Tiers:
             for key in sort_lines.keys():
                 if all_bases[key]:
                     line_base = f'BaseType {all_bases[key]} \n'
-                    line_base = line_base.replace('\'', '\"').replace('[', '').replace(']', '').replace(',', '')
+                    line_base = line_base.replace('[', '').replace(']', '').replace(',', '')
+                    line_base = line_base.replace('\' ', '\" ').replace(' \'', ' \"')
                     self.file_strings[sort_lines[key]] = line_base
-                    if re.match('Show', self.file_strings[sort_lines[key] + 1]) or \
-                            re.match('#Show', self.file_strings[sort_lines[key] + 1]):
-                        for i in range(1, 10):
-                            prev_line = self.file_strings[sort_lines[key] - i]
-                            if re.match('#', prev_line):
-                                self.file_strings[sort_lines[key] - i] = remove_hash_sign(prev_line)
-                            else:
-                                break
+                    if 'Show' in self.file_strings[sort_lines[key] + 1]:
                         self.file_strings[sort_lines[key]] = f'{line_base}\n'
+                    for i in range(1, 10):
+                        prev_line = self.file_strings[sort_lines[key] - i]
+                        if re.match('#', prev_line):
+                            self.file_strings[sort_lines[key] - i] = remove_hash_sign(prev_line)
+                        else:
+                            break
             tmp_file.writelines(self.file_strings)
             tmp_file.close()
         return sort_lines
@@ -61,7 +61,7 @@ class Tiers:
             for index in range(len(self.open_filter())):
                 line = self.file_strings[index]
                 if self.find_method(tier, line):
-                    if re.match('#', line):
+                    if re.match('##', line):
                         remove_hash_sign(line)
                     for i in range(1, 50):
                         if 'BaseType' in self.file_strings[index + i]:
@@ -392,6 +392,4 @@ if __name__ == "__main__":
     lines.update(incubators.find_lines())
     lines.update(uni_maps.find_lines())
     lines.update(scarabs.find_lines())
-    lines = {k: v for k, v in sorted(lines.items(), key=lambda item: item[1])}
-    print(f'Lines sorted by values: {lines}')
-    tiers.save_filter(lines, bases)
+    print(f'Lines sorted by values: {tiers.save_filter(lines, bases)}')
