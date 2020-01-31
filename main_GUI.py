@@ -5,11 +5,13 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from GUI.GUI_2 import *
-import tiers
+import tiers as t
+import shutil
+from Parsedata import Getdata
 
 
 class MyWin(QtWidgets.QMainWindow):
-    def __init__(self, file='', parent=None):
+    def __init__(self, open_file='', save_file='', all_strings=None, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -18,12 +20,14 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.OpenFileBtn.clicked.connect(self.OpenFileBtn_clicked)
         self.ui.SaveBtn.clicked.connect(self.SaveBtn_clicked)
         self.ui.SortBtn.clicked.connect(self.SortBtn_clicked)
-        self.checkboxes = {self.ui.UniquesCheck: tiers.uniques, self.ui.UniqueMapsCheck: tiers.uni_maps,
-                           self.ui.FragmentsCheck: tiers.fragments, self.ui.DivinationCheck: tiers.div_cards,
-                           self.ui.FossilsCheck: tiers.fossils, self.ui.ResonatorsCheck: tiers.resonators,
-                           self.ui.ScarabsCheck: tiers.scarabs, self.ui.OilsCheck: tiers.oils,
-                           self.ui.IncubatorsCheck: tiers.incubators}
-        self.file = file
+        self.checkboxes = {self.ui.UniquesCheck: t.uniques, self.ui.UniqueMapsCheck: t.uni_maps,
+                           self.ui.FragmentsCheck: t.fragments, self.ui.DivinationCheck: t.div_cards,
+                           self.ui.FossilsCheck: t.fossils, self.ui.ResonatorsCheck: t.resonators,
+                           self.ui.ScarabsCheck: t.scarabs, self.ui.OilsCheck: t.oils,
+                           self.ui.IncubatorsCheck: t.incubators}
+        self.open_file = open_file
+        self.save_file = save_file
+        self.all_strings = all_strings
 
     def SelectAllBtn_clicked(self):
         for checkbox in self.checkboxes.keys():
@@ -36,39 +40,42 @@ class MyWin(QtWidgets.QMainWindow):
                 checkbox.toggle()
 
     def OpenFileBtn_clicked(self):
-        self.file = QFileDialog.getOpenFileName(self, 'Open File',
-                                                osp.expanduser('~\\Documents\\My Games\\Path of Exile'),
-                                                filter='Lootfilter file(*.filter)')[0]
+        self.open_file = QFileDialog.getOpenFileName(self, 'Open File',
+                                                     osp.expanduser('~\\Documents\\My Games\\Path of Exile'),
+                                                     filter='Lootfilter file(*.filter)')[0]
         try:
-            file = open(self.file, 'r', encoding='utf-8')
+            file = open(self.open_file, 'r', encoding='utf-8')
+            self.all_strings = t.tiers.open_filter(self.open_file)
             with file:
-                self.ui.FilterName.setText(osp.basename(self.file))
+                self.ui.FilterName.setText(osp.basename(self.open_file))
                 file.close()
-                print(osp.abspath(self.file))
-                return osp.abspath(self.file)
         except:
             pass
 
     def SaveBtn_clicked(self):
-        pass
+        if self.ui.OverrideCheck.isChecked():
+            shutil.copyfile('tmp.txt', osp.basename(self.open_file))
+        else:
+            self.save_file = QFileDialog.getSaveFileName(self, 'Save File',
+                                                         osp.expanduser('~\\Documents\\My Games\\Path of Exile'),
+                                                         filter='Lootfilter file(*.filter)')[0]
+            shutil.copyfile('tmp.txt', osp.basename(self.save_file))
 
     def SortBtn_clicked(self):
         lines = dict()
         bases = dict()
-        try:
-            for checkbox in self.checkboxes.keys():
-                if checkbox.isChecked() is True:  # проверка чекбоксов на поставленные галочки
-                    # находим строки в файле фильтра:
-                    lines.update(self.checkboxes[checkbox].find_lines(osp.abspath(self.file)))
-                    bases.update(self.checkboxes[checkbox].take_bases())
-            #sort = tiers.save_filter(lines, self.file)  # сортировка найденных строк, замена данных и сохранение
-            #if sort == {}:
-            #    print('Select category')
-            else:
-                print(lines)
-                print(bases)
-        except:
-            print('Error')
+        league = self.ui.League.currentText()
+        #  Getdata().save_parser(league)
+        print(f'Данные лиги {league} успешно загружены')
+        for checkbox in self.checkboxes.keys():
+            if checkbox.isChecked() is True:  # проверка чекбоксов на поставленные галочки
+                # находим строки в файле фильтра:
+                bases.update(self.checkboxes[checkbox].take_bases())
+                lines.update(self.checkboxes[checkbox].find_lines())
+        sort = t.tiers.save_filter(lines, bases)  # сортировка найденных строк, замена данных и сохранение
+        if sort == {}:            print('Select category')
+        else:
+            print(sort)
 
     def mbox(self, body, title='Error'):
         dialog = QMessageBox(QMessageBox.Information, title, body)
