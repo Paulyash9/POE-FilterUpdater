@@ -8,8 +8,8 @@ def remove_hash_sign(line):
 
 
 class Tiers:
-    def __init__(self, contents=None, parse_file='parse.json', tierlist=None, tier_1_price=12, tier_2_price=5,
-                 tier_3_price=2, file_strings=None,
+    def __init__(self, contents=None, parse_file='parse.json', tierlist=None,
+                 tier_1_price=12, tier_2_price=5, tier_3_price=2, file_strings=None,
                  exception=('Timeworn Reliquary Key', 'Ancient Reliquary Key')):
         self.contents = contents
         self.parse_file = parse_file
@@ -26,8 +26,8 @@ class Tiers:
         self.file_strings = file_strings
         self.exception = exception
 
-    def open_filter(self, file='FilterBlade.filter'):
-        with open(file, 'r', encoding='utf-8') as openf:
+    def open_filter(self, filter_file):
+        with open(filter_file, 'r', encoding='utf-8') as openf:
             self.file_strings = openf.readlines()
             openf.close()
         return self.file_strings
@@ -55,10 +55,10 @@ class Tiers:
             tmp_file.close()
         return sort_lines
 
-    def find_lines(self):
+    def find_lines(self, filter_file):
         all_lines = dict()
         for tier in self.tierlist:
-            for index in range(len(self.open_filter())):
+            for index in range(len(self.open_filter(filter_file))):
                 line = self.file_strings[index]
                 if self.find_method(tier, line):
                     if re.match('##', line):
@@ -110,7 +110,7 @@ class Tiers:
 
 class Fragments(Tiers):
     def __init__(self, contents='fragment', parse_file='parse.json', tierlist=None, tier_4_price=1):
-        super().__init__(contents, parse_file, tier_1_price=12, tier_2_price=5, tier_3_price=2)
+        super().__init__(contents, parse_file, tier_1_price=12, tier_2_price=5, tier_3_price=2, )
         self.tier_4_price = abs(float(tier_4_price))
         if tierlist is None:
             self.tierlist = ['1', '1p', '2', '3', '4']
@@ -153,8 +153,8 @@ class Oils(Tiers):
 
 
 class Resonators(Tiers):
-    def __init__(self, contents='resonator', parse_file='parse.json', tierlist=None, tier_1_price=12, tier_2_price=5):
-        super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price)
+    def __init__(self, contents='resonator', parse_file='parse.json', tierlist=None):
+        super().__init__(contents, parse_file, tierlist, tier_1_price=12, tier_2_price=5)
         if tierlist is None:
             self.tierlist = ['1', '2', '3']
 
@@ -284,7 +284,8 @@ class Uniques(Tiers):
                             'Cobalt Jewel', 'Crimson Jewel', 'Viridian Jewel', 'Simple Robe', 'Cobalt Jewel',
                             'Crimson Jewel', 'Viridian Jewel'),
                  unique_types=('flask', 'weapon', 'jewel', 'armour', 'accessory')):
-        super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price, tier_3_price, exception)
+        super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price, tier_3_price,
+                         exception)
         self.unique_types = unique_types
         if tierlist is None:
             self.tierlist = ['1', '2', '4']
@@ -373,7 +374,8 @@ incubators = Incubators()
 if __name__ == "__main__":
     lines = dict()
     bases = dict()
-    tiers.open_filter()
+    filter_file = 'HiEnd.filter'
+    tiers.open_filter(filter_file)
     bases.update(uniques.take_bases())
     bases.update(fragments.take_bases())
     bases.update(div_cards.take_bases())
@@ -383,13 +385,13 @@ if __name__ == "__main__":
     bases.update(oils.take_bases())
     bases.update(incubators.take_bases())
     bases.update(uni_maps.take_bases())
-    lines.update(uniques.find_lines())
-    lines.update(fossils.find_lines())
-    lines.update(oils.find_lines())
-    lines.update(fragments.find_lines())
-    lines.update(div_cards.find_lines())
-    lines.update(resonators.find_lines())
-    lines.update(incubators.find_lines())
-    lines.update(uni_maps.find_lines())
-    lines.update(scarabs.find_lines())
+    lines.update(uniques.find_lines(filter_file))
+    lines.update(fossils.find_lines(filter_file))
+    lines.update(oils.find_lines(filter_file))
+    lines.update(fragments.find_lines(filter_file))
+    lines.update(div_cards.find_lines(filter_file))
+    lines.update(resonators.find_lines(filter_file))
+    lines.update(incubators.find_lines(filter_file))
+    lines.update(uni_maps.find_lines(filter_file))
+    lines.update(scarabs.find_lines(filter_file))
     print(f'Lines sorted by values: {tiers.save_filter(lines, bases)}')

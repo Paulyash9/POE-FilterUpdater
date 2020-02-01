@@ -13,6 +13,7 @@ from Parsedata import Getdata
 class MyWin(QtWidgets.QMainWindow):
     def __init__(self, open_file='', save_file='', all_strings=None, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
+        self.completed = 0
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.SelectAllBtn.clicked.connect(self.SelectAllBtn_clicked)
@@ -49,8 +50,40 @@ class MyWin(QtWidgets.QMainWindow):
             with file:
                 self.ui.FilterName.setText(osp.basename(self.open_file))
                 file.close()
+            self.ui.League.setEnabled(True)
+            self.ui.SortBtn.setEnabled(True)
+            for cat in self.checkboxes.keys():
+                cat.setEnabled(True)
+            self.ui.SelectAllBtn.setEnabled(True)
+            self.ui.RemoveAllBtn.setEnabled(True)
         except:
-            pass
+            self.mbox('Choose file to open')
+
+    def SortBtn_clicked(self):
+        lines = dict()
+        bases = dict()
+        league = self.ui.League.currentText()
+        self.completed = 0
+        while self.completed < 35:
+            self.completed += 0.001
+            self.ui.progressBar.setValue(self.completed)
+        Getdata().save_parser(league)
+        print(f'Данные лиги {league} успешно загружены')
+        i = 5
+        for checkbox in self.checkboxes.keys():
+            if checkbox.isChecked() is True:  # проверка чекбоксов на поставленные галочки
+                bases.update(self.checkboxes[checkbox].take_bases())  # распределяем предметы по группам
+                lines.update(self.checkboxes[checkbox].find_lines(self.open_file))  # находим строки в файле фильтра
+                self.ui.progressBar.setValue(45+i)
+                i += 5
+        sorted = t.tiers.save_filter(lines, bases)  # сортировка найденных строк, замена данных и сохранение
+        if lines == {}:
+            print('Select category')
+            print(sorted)
+        else:
+            self.ui.progressBar.setValue(100)
+            self.ui.SaveBtn.setEnabled(True)
+            self.ui.OverrideCheck.setEnabled(True)
 
     def SaveBtn_clicked(self):
         try:
@@ -64,23 +97,6 @@ class MyWin(QtWidgets.QMainWindow):
                 print('Saved')
         except:
             pass
-
-    def SortBtn_clicked(self):
-        lines = dict()
-        bases = dict()
-        league = self.ui.League.currentText()
-        Getdata().save_parser(league)
-        print(f'Данные лиги {league} успешно загружены')
-        for checkbox in self.checkboxes.keys():
-            if checkbox.isChecked() is True:  # проверка чекбоксов на поставленные галочки
-                # находим строки в файле фильтра:
-                bases.update(self.checkboxes[checkbox].take_bases())
-                lines.update(self.checkboxes[checkbox].find_lines())
-        sorted = t.tiers.save_filter(lines, bases)  # сортировка найденных строк, замена данных и сохранение
-        if lines == {}:
-            print('Select category')
-        else:
-            print('Done')
 
     def mbox(self, body, title='Error'):
         dialog = QMessageBox(QMessageBox.Information, title, body)
