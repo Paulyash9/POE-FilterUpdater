@@ -1,5 +1,6 @@
 import json
 import re
+import find_exception as fe
 
 
 def remove_hash_sign(line):
@@ -100,9 +101,10 @@ class Tiers:
 
     def remove_exception(self, item_name):
         if item_name in self.exception:
-            return None
-        else:
-            return item_name
+            if item_name not in fe.clean_list():
+                return None
+            else:
+                return item_name
 
     def __repr__(self):
         return f'<{self.contents}>'
@@ -282,7 +284,11 @@ class Uniques(Tiers):
                             'Spiraled Wand', 'Strapped Leather', 'Tarnished Spirit Shield', 'Velvet Gloves',
                             'Velvet Slippers', 'Vine Circlet', 'War Buckler', 'Wild Leather', 'Woodsplitter',
                             'Cobalt Jewel', 'Crimson Jewel', 'Viridian Jewel', 'Simple Robe', 'Cobalt Jewel',
-                            'Crimson Jewel', 'Viridian Jewel'),
+                            'Crimson Jewel', 'Viridian Jewel', 'Amethyst Ring', 'Blue Pearl Amulet', 'Chain Belt',
+                            'Citrine Amulet', 'Cloth Belt', 'Clutching Talisman', 'Coral Amulet', 'Diamond Ring',
+                            'Greatwolf Talisman', 'Heavy Belt', 'Lapis Amulet', 'Opal Ring', 'Paua Amulet', 'Paua Ring',
+                            'Prismatic Ring', 'Rotfeather Talisman', 'Ruby Amulet', 'Ruby Ring', 'Rustic Sash',
+                            'Wereclaw Talisman'),
                  unique_types=('flask', 'weapon', 'jewel', 'armour', 'accessory')):
         super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price, tier_3_price,
                          exception)

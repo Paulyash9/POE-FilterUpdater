@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
+        MainWindow.setObjectName("POEFilterUpdater")
         MainWindow.setEnabled(True)
         MainWindow.resize(520, 420)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
@@ -347,40 +347,40 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.Select_label.setText(_translate("MainWindow", "Select"))
-        self.UniquesCheck.setText(_translate("MainWindow", "Uniques"))
-        self.FragmentsCheck.setText(_translate("MainWindow", "Fragments"))
-        self.DivinationCheck.setText(_translate("MainWindow", "Divination Cards"))
-        self.FossilsCheck.setText(_translate("MainWindow", "Fossils"))
-        self.ScarabsCheck.setText(_translate("MainWindow", "Scarabs"))
-        self.ResonatorsCheck.setText(_translate("MainWindow", "Resonators"))
-        self.IncubatorsCheck.setText(_translate("MainWindow", "Incubators"))
-        self.OilsCheck.setText(_translate("MainWindow", "Oils"))
-        self.FilterName_label.setText(_translate("MainWindow", "Filter Name:"))
-        self.League_label.setText(_translate("MainWindow", "Choose league:"))
-        self.OpenFilter_label.setText(_translate("MainWindow", "Open .filter file"))
-        self.SaveFilter_label.setText(_translate("MainWindow", "Save .filter file"))
-        self.OverrideCheck.setText(_translate("MainWindow", "Override .filter file"))
-        self.OpenFileBtn.setText(_translate("MainWindow", "Open File"))
-        self.SortBtn.setText(_translate("MainWindow", "Sort"))
-        self.SaveBtn.setText(_translate("MainWindow", "Save"))
-        self.Changes_label.setText(_translate("MainWindow", "Changes"))
-        self.SelectAllBtn.setText(_translate("MainWindow", "Select All"))
-        self.RemoveAllBtn.setText(_translate("MainWindow", "Remove All"))
-        self.League.setItemText(0, _translate("MainWindow", "Current SC"))
-        self.League.setItemText(1, _translate("MainWindow", "Current HC"))
-        self.League.setItemText(2, _translate("MainWindow", "Standart SC"))
-        self.League.setItemText(3, _translate("MainWindow", "Standart HC"))
-        self.FilterName.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        MainWindow.setWindowTitle(_translate("POEFilterUpdater", "POEFilterUpdater"))
+        self.Select_label.setText(_translate("POEFilterUpdater", "Select"))
+        self.UniquesCheck.setText(_translate("POEFilterUpdater", "Uniques"))
+        self.FragmentsCheck.setText(_translate("POEFilterUpdater", "Fragments"))
+        self.DivinationCheck.setText(_translate("POEFilterUpdater", "Divination Cards"))
+        self.FossilsCheck.setText(_translate("POEFilterUpdater", "Fossils"))
+        self.ScarabsCheck.setText(_translate("POEFilterUpdater", "Scarabs"))
+        self.ResonatorsCheck.setText(_translate("POEFilterUpdater", "Resonators"))
+        self.IncubatorsCheck.setText(_translate("POEFilterUpdater", "Incubators"))
+        self.OilsCheck.setText(_translate("POEFilterUpdater", "Oils"))
+        self.FilterName_label.setText(_translate("POEFilterUpdater", "Filter Name:"))
+        self.League_label.setText(_translate("POEFilterUpdater", "Choose league:"))
+        self.OpenFilter_label.setText(_translate("POEFilterUpdater", "Open .filter file"))
+        self.SaveFilter_label.setText(_translate("POEFilterUpdater", "Save .filter file"))
+        self.OverrideCheck.setText(_translate("POEFilterUpdater", "Override .filter file"))
+        self.OpenFileBtn.setText(_translate("POEFilterUpdater", "Open File"))
+        self.SortBtn.setText(_translate("POEFilterUpdater", "Sort"))
+        self.SaveBtn.setText(_translate("POEFilterUpdater", "Save"))
+        self.Changes_label.setText(_translate("POEFilterUpdater", "Changes"))
+        self.SelectAllBtn.setText(_translate("POEFilterUpdater", "Select All"))
+        self.RemoveAllBtn.setText(_translate("POEFilterUpdater", "Remove All"))
+        self.League.setItemText(0, _translate("POEFilterUpdater", "Current SC"))
+        self.League.setItemText(1, _translate("POEFilterUpdater", "Current HC"))
+        self.League.setItemText(2, _translate("POEFilterUpdater", "Standart SC"))
+        self.League.setItemText(3, _translate("POEFilterUpdater", "Standart HC"))
+        self.FilterName.setHtml(_translate("POEFilterUpdater", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:12pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8.25pt;\"><br /></p></body></html>"))
-        self.UniqueMapsCheck.setText(_translate("MainWindow", "Unique Maps"))
-        self.League_label_2.setText(_translate("MainWindow", "Sort items:"))
-        self.menuMain.setTitle(_translate("MainWindow", "Main"))
-        self.actionExit.setText(_translate("MainWindow", "Exit"))
+        self.UniqueMapsCheck.setText(_translate("POEFilterUpdater", "Unique Maps"))
+        self.League_label_2.setText(_translate("POEFilterUpdater", "Sort items:"))
+        self.menuMain.setTitle(_translate("POEFilterUpdater", "Main"))
+        self.actionExit.setText(_translate("POEFilterUpdater", "Exit"))
 
 
 if __name__ == "__main__":

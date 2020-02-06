@@ -94,7 +94,7 @@ class MyWin(QtWidgets.QMainWindow):
                                                              osp.expanduser('~\\Documents\\My Games\\Path of Exile'),
                                                              filter='Lootfilter file(*.filter)')[0]
                 shutil.copyfile('tmp.txt', self.save_file)
-                print('Saved')
+                self.mbox('Done!', title=' ')
         except:
             pass
 
