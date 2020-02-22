@@ -9,13 +9,11 @@ def remove_hash_sign(line):
 
 
 class Tiers:
-    def __init__(self, contents=None, parse_file='parse.json', tierlist=None,
+    def __init__(self, contents=None, parse_file='parse.json', tierlist=('1', '2', '3', '4'),
                  tier_1_price=12, tier_2_price=5, tier_3_price=2, file_strings=None,
                  exception=('Timeworn Reliquary Key', 'Ancient Reliquary Key')):
         self.contents = contents
         self.parse_file = parse_file
-        if tierlist is None:
-            tierlist = ['1', '2', '3', '4']
         self.tierlist = tierlist
         self.tier_1_price = abs(float(tier_1_price))
         self.tier_2_price = abs(float(tier_2_price))
@@ -111,11 +109,10 @@ class Tiers:
 
 
 class Fragments(Tiers):
-    def __init__(self, contents='fragment', parse_file='parse.json', tierlist=None, tier_4_price=1):
-        super().__init__(contents, parse_file, tier_1_price=12, tier_2_price=5, tier_3_price=2, )
+    def __init__(self, contents='fragment', parse_file='parse.json', tierlist=('1', '1p', '2', '3', '4'),
+                 tier_1_price=12, tier_2_price=5, tier_3_price=2, tier_4_price=1):
+        super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price, tier_3_price)
         self.tier_4_price = abs(float(tier_4_price))
-        if tierlist is None:
-            self.tierlist = ['1', '1p', '2', '3', '4']
 
     def find_method(self, tier, line):
         if f'{tier} ' in line and f'type->fragments' in line and 'scarabs' not in line:
@@ -143,11 +140,9 @@ class Fragments(Tiers):
 
 
 class Oils(Tiers):
-    def __init__(self, contents='oil', parse_file='parse.json', tierlist=None, tier_1_price=12, tier_2_price=5,
-                 tier_3_price=2):
+    def __init__(self, contents='oil', parse_file='parse.json', tierlist=('1', '2', '3', '4'),
+                 tier_1_price=12, tier_2_price=5, tier_3_price=2):
         super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price, tier_3_price)
-        if tierlist is None:
-            self.tierlist = ['1', '2', '3', '4']
 
     def find_method(self, tier, line):
         if tier in line and f'currency->oil' in line:
@@ -155,10 +150,8 @@ class Oils(Tiers):
 
 
 class Resonators(Tiers):
-    def __init__(self, contents='resonator', parse_file='parse.json', tierlist=None):
+    def __init__(self, contents='resonator', parse_file='parse.json', tierlist=('1', '2', '3')):
         super().__init__(contents, parse_file, tierlist, tier_1_price=12, tier_2_price=5)
-        if tierlist is None:
-            self.tierlist = ['1', '2', '3']
 
     def find_method(self, tier, line):
         if tier in line and 'resonator' in line:
@@ -182,10 +175,9 @@ class Resonators(Tiers):
 
 
 class Fossils(Tiers):
-    def __init__(self, contents='fossil', parse_file='parse.json', tierlist=None):
-        super().__init__(contents, parse_file, tier_1_price=12, tier_2_price=5)
-        if tierlist is None:
-            self.tierlist = ['1', '2', '4']
+    def __init__(self, contents='fossil', parse_file='parse.json', tierlist=('1', '2', '4'),
+                 tier_1_price=12, tier_2_price=5):
+        super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price)
 
     def find_method(self, tier, line):
         if str(tier) in line and 'fossil' in line:
@@ -208,7 +200,7 @@ class Fossils(Tiers):
 
 
 class Divination_cards(Tiers):
-    def __init__(self, contents='card', parse_file='parse.json', tierlist=None,
+    def __init__(self, contents='card', parse_file='parse.json', tierlist=('1', '2', '3', '4'),
                  tier_1_price=12, tier_2_price=5, tier_3_price=0.65,
                  exception=('The Demoness', 'The Wolf\'s Shadow', "The Wolf\'s Legacy", 'The Master Artisan',
                             'A Mother\'s Parting Gift', 'Birth of the Three', 'Dark Temptation',
@@ -229,8 +221,6 @@ class Divination_cards(Tiers):
                             'Buried Treasure', 'The Journey', 'Rain of Chaos', 'Her Mask', 'The Gambler',
                             'The Flora\'s Gift', 'The Scholar')):
         super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price, tier_3_price, exception)
-        if tierlist is None:
-            self.tierlist = ['1', '2', '3', '4']
 
     def find_method(self, tier, line):
         if 'divination' in line and tier in line and "%H" not in line:
@@ -238,11 +228,9 @@ class Divination_cards(Tiers):
 
 
 class Unique_Maps(Tiers):
-    def __init__(self, contents='unique', parse_file='parse.json', tierlist=None,
+    def __init__(self, contents='unique', parse_file='parse.json', tierlist=('1', '2', '3'),
                  tier_1_price=12, tier_2_price=5):
         super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price)
-        if tierlist is None:
-            self.tierlist = ['1', '2', '3']
 
     def find_method(self, tier, line):
         if f'{tier} ' in line and f'unique->maps' in line:
@@ -266,7 +254,7 @@ class Unique_Maps(Tiers):
 
 
 class Uniques(Tiers):
-    def __init__(self, contents='uniques', parse_file='parse.json', tierlist=None,
+    def __init__(self, contents='uniques', parse_file='parse.json', tierlist=('1', '2', '4'),
                  tier_1_price=12, tier_2_price=5, tier_3_price=2,
                  exception=('Amber Amulet', 'Assassin Bow', 'Sapphire Ring', 'Triumphant Lamellar', 'Agate Amulet',
                             'Topaz Ring', 'Saint\'s Hauberk', 'Penetrating Arrow Quiver', 'Jade Amulet',
@@ -293,8 +281,6 @@ class Uniques(Tiers):
         super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price, tier_3_price,
                          exception)
         self.unique_types = unique_types
-        if tierlist is None:
-            self.tierlist = ['1', '2', '4']
 
     def find_method(self, tier, line):
         if tier in line and f'type->uniques' in line and 'prophecy' not in line:
@@ -319,10 +305,9 @@ class Uniques(Tiers):
 
 
 class Scarabs(Tiers):
-    def __init__(self, contents='scarab', parse_file='parse.json', tierlist=None, tier_1_price=12, tier_2_price=5):
+    def __init__(self, contents='scarab', parse_file='parse.json', tierlist=('1', '2'),
+                 tier_1_price=12, tier_2_price=5):
         super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price)
-        if tierlist is None:
-            self.tierlist = ['1', '2']
 
     def find_method(self, tier, line):
         if tier in line and self.contents.lower() in line:
@@ -343,10 +328,9 @@ class Scarabs(Tiers):
 
 
 class Incubators(Tiers):
-    def __init__(self, contents='incubator', parse_file='parse.json', tierlist=None, tier_1_price=12, tier_2_price=5):
+    def __init__(self, contents='incubator', parse_file='parse.json', tierlist=('1', '2'),
+                 tier_1_price=12, tier_2_price=5):
         super().__init__(contents, parse_file, tierlist, tier_1_price, tier_2_price)
-        if tierlist is None:
-            self.tierlist = ['1', '2']
 
     def find_method(self, tier, line):
         if tier in line and self.contents.lower() in line:

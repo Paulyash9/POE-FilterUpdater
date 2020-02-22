@@ -89,6 +89,7 @@ class MyWin(QtWidgets.QMainWindow):
         try:
             if self.ui.OverrideCheck.isChecked():
                 shutil.copyfile('tmp.txt', self.open_file)
+                self.mbox('Done!', title=' ')
             else:
                 self.save_file = QFileDialog.getSaveFileName(self, 'Save File',
                                                              osp.expanduser('~\\Documents\\My Games\\Path of Exile'),
