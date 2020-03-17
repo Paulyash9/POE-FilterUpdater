@@ -11,7 +11,8 @@ from Parsedata import Getdata
 
 
 class MyWin(QtWidgets.QMainWindow):
-    def __init__(self, open_file='', save_file='', all_strings=None, parent=None):
+    def __init__(self, open_file='', save_file='',
+                 all_strings=None, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         self.completed = 0
         self.ui = Ui_MainWindow()
@@ -21,10 +22,14 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.OpenFileBtn.clicked.connect(self.OpenFileBtn_clicked)
         self.ui.SaveBtn.clicked.connect(self.SaveBtn_clicked)
         self.ui.SortBtn.clicked.connect(self.SortBtn_clicked)
-        self.checkboxes = {self.ui.UniquesCheck: t.uniques, self.ui.UniqueMapsCheck: t.uni_maps,
-                           self.ui.FragmentsCheck: t.fragments, self.ui.DivinationCheck: t.div_cards,
-                           self.ui.FossilsCheck: t.fossils, self.ui.ResonatorsCheck: t.resonators,
-                           self.ui.ScarabsCheck: t.scarabs, self.ui.OilsCheck: t.oils,
+        self.checkboxes = {self.ui.UniquesCheck: t.uniques,
+                           self.ui.UniqueMapsCheck: t.uni_maps,
+                           self.ui.FragmentsCheck: t.fragments,
+                           self.ui.DivinationCheck: t.div_cards,
+                           self.ui.FossilsCheck: t.fossils,
+                           self.ui.ResonatorsCheck: t.resonators,
+                           self.ui.ScarabsCheck: t.scarabs,
+                           self.ui.OilsCheck: t.oils,
                            self.ui.IncubatorsCheck: t.incubators}
         self.open_file = open_file
         self.save_file = save_file
