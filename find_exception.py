@@ -4,7 +4,7 @@ import tiers as t
 def open_filter(filter_file):
     lines = dict()
     lines.update(t.uniques.find_lines(filter_file))
-    return lines, filter_file
+    return lines
 
 
 def take_items(lines, filter_file):
@@ -18,18 +18,18 @@ def take_items(lines, filter_file):
 
 
 def clean_list(file='FilterBlade.filter'):
-    need_items = take_items(open_filter(file)[0], open_filter(file)[1])
+    need_items = take_items(open_filter(file), file)
     rep = {'\tBaseType': '',
            'BaseType': '',
            '\n': '',
            ' "': '"',
-           '""': '" "'
+           '""': '" "',
            }
-    for index in range(len(need_items)):
-        renamed = need_items[index]
+    for ind in range(len(need_items)):
+        renamed = need_items[ind]
         for to_replace, value in rep.items():
             renamed = renamed.replace(to_replace, value)
-        need_items[index] = renamed
+        need_items[ind] = renamed
     return tuple(need_items)
 
 

@@ -34,6 +34,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.open_file = open_file
         self.save_file = save_file
         self.all_strings = all_strings
+        self.items = t.items
 
     def SelectAllBtn_clicked(self):
         for checkbox in self.checkboxes.keys():
@@ -68,11 +69,8 @@ class MyWin(QtWidgets.QMainWindow):
         lines = dict()
         bases = dict()
         league = self.ui.League.currentText()
+        self.items = t.Tiers().take_items(league)
         self.completed = 0
-        while self.completed < 35:
-            self.completed += 0.001
-            self.ui.progressBar.setValue(self.completed)
-        Getdata().save_parser(league)
         print(f'Данные лиги {league} успешно загружены')
         i = 5
         for checkbox in self.checkboxes.keys():
@@ -81,7 +79,8 @@ class MyWin(QtWidgets.QMainWindow):
                 lines.update(self.checkboxes[checkbox].find_lines(self.open_file))  # находим строки в файле фильтра
                 self.ui.progressBar.setValue(45+i)
                 i += 5
-        sorted = t.tiers.save_filter(lines, bases)  # сортировка найденных строк, замена данных и сохранение
+        t.tiers.save_filter(lines, bases)  # сортировка найденных строк, замена данных и сохранение
+        print(lines)
         if lines == {}:
             print('Select category')
             print(sorted)
