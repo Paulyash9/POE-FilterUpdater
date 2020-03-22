@@ -1,7 +1,7 @@
 # POE-FilterUpdater
 POE-FilterUpdater parses https://poe.watch/api and makes sort items in your lootfilter file with actual prices.
 
-#### Download executable version of program: [here](https://drive.google.com/open?id=1ZmH1I8hgysTRWnAF5tQhKz1tYVY5p0sr)
+#### Download executable version of program: [here](https://drive.google.com/file/d/1JMkQlUwF6JU110PDBv6tdlIh8xn7qDra)
 
 ## Instructions
 1. Open your .filter file
