@@ -40,27 +40,28 @@ class Tiers:
             openf.close()
         return self.file_strings
 
-    def save_filter(self, all_lines, all_bases):
+    def save_filter(self, lines, bases):
         """сортировка индексов найденных строк в открытом файле фильтра"""
-        sort_lines = {k: v for k, v in sorted(all_lines.items(),
+        sort_lines = {k: v for k, v in sorted(lines.items(),
                                               key=lambda item: item[1])}
         """запись копии файла с заменой данных"""
         with open('tmp.txt', 'w', encoding='utf-8') as tmp_file:
             for key in sort_lines.keys():
-                if key in all_bases.keys():
-                    line_base = f'BaseType {all_bases[key]} \n'
-                    to_replace = (('[', ''), (']', ''), (',', ''), ('\' ', '\" '), (' \'', ' \"'))
-                    for value in to_replace:
-                        line_base = line_base.replace(value[0], value[1])
-                    self.file_strings[sort_lines[key]] = line_base
-                    if 'Show' in self.file_strings[sort_lines[key] + 1]:
-                        self.file_strings[sort_lines[key]] = f'{line_base}\n'
-                    for i in range(1, 10):
-                        prev_line = self.file_strings[sort_lines[key] - i]
-                        if re.match('#', prev_line):
-                            self.file_strings[sort_lines[key] - i] = remove_hash_sign(prev_line)
-                        else:
-                            break
+                if bases[key]:
+                    if key in bases.keys():
+                        line_base = f'BaseType {bases[key]} \n'
+                        to_replace = (('[', ''), (']', ''), (',', ''), ('\' ', '\" '), (' \'', ' \"'))
+                        for value in to_replace:
+                            line_base = line_base.replace(value[0], value[1])
+                        self.file_strings[sort_lines[key]] = line_base
+                        if 'Show' in self.file_strings[sort_lines[key] + 1]:
+                            self.file_strings[sort_lines[key]] = f'{line_base}\n'
+                        for i in range(1, 10):
+                            prev_line = self.file_strings[sort_lines[key] - i]
+                            if re.match('#', prev_line):
+                                self.file_strings[sort_lines[key] - i] = remove_hash_sign(prev_line)
+                            else:
+                                break
             tmp_file.writelines(self.file_strings)
             tmp_file.close()
         return sort_lines
@@ -464,4 +465,6 @@ if __name__ == "__main__":
     lines.update(scarabs.find_lines(filter_file))
 
     print(f'Lines sorted by values: {tiers.save_filter(lines, bases)}')
-    print(bases)
+    for key in bases.keys():
+        if bases[key]:
+            print(bases[key])
